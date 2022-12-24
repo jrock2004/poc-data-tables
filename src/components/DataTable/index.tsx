@@ -1,39 +1,58 @@
 import { ReactElement } from 'react';
-import { Select, Stack } from '@mui/material';
-import { DataGrid, GridColumns, GridRenderEditCellParams, GridRowsProp } from '@mui/x-data-grid';
+import { SxProps, Theme } from '@mui/material';
+import {
+  DataGrid,
+  GridCellParams,
+  GridColumns,
+  GridRowsProp,
+  MuiBaseEvent,
+  MuiEvent,
+} from '@mui/x-data-grid';
 
-const RenderEditCell = (params: GridRenderEditCellParams): ReactElement => {
-  return (
-    <Stack>
-      <Select
-        value={params.value}
-        onChange={(e) =>
-          params.api.setEditCellValue({ id: params.id, field: params.field, value: e.target.value })
-        }
-      />
-    </Stack>
-  );
-};
+export const DataTable = ({
+  ariaLabel,
+  ariaLabelledBy,
+  checkboxSelection,
+  columns,
+  loading,
+  onCellEditStop,
+  pageSize = 50,
+  sx,
+  rows,
+}: TDataTable): ReactElement => {
+  const dataGridProperties: TDataTable = {
+    columns,
+    loading,
+    onCellEditStop,
+    rows,
+  };
 
-export const DataTable = ({ checkboxSelection, columns, tableData }: TDataTable): ReactElement => {
+  // We either need ariaLabel or ariaLabelledBy
+  if (ariaLabel) {
+    dataGridProperties['ariaLabel'] = ariaLabel;
+  } else if (ariaLabelledBy) {
+    dataGridProperties['ariaLabelledBy'] = ariaLabelledBy;
+  } else {
+    console.error('DataTable: ariaLabel or ariaLabelledBy is required');
+  }
+
   return (
-    <div
-      style={{
-        height: '300px',
-        width: '100%',
+    <DataGrid
+      {...dataGridProperties}
+      autoHeight={true}
+      checkboxSelection={checkboxSelection}
+      experimentalFeatures={{
+        newEditingApi: true,
       }}
-    >
-      <DataGrid
-        checkboxSelection={checkboxSelection}
-        columns={columns}
-        rows={tableData}
-        showColumnRightBorder={false}
-        showCellRightBorder={false}
-        sx={{
-          border: 'none',
-        }}
-      />
-    </div>
+      pageSize={pageSize}
+      rowsPerPageOptions={[]}
+      showColumnRightBorder={false}
+      showCellRightBorder={false}
+      sx={{
+        ...sx,
+        border: 'none',
+      }}
+    />
   );
 };
 
@@ -41,7 +60,13 @@ export type TDataTableColumn = GridColumns;
 export type TDataTableRows = GridRowsProp;
 
 export type TDataTable = {
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
   checkboxSelection?: boolean;
   columns: TDataTableColumn;
-  tableData: TDataTableRows;
+  loading: boolean;
+  onCellEditStop: (params: GridCellParams, event: MuiEvent<MuiBaseEvent>) => void;
+  pageSize?: number;
+  sx?: SxProps<Theme>;
+  rows: TDataTableRows;
 };
