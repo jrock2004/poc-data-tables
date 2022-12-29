@@ -51,6 +51,9 @@ export const DataTable = ({
       sx={{
         ...sx,
         border: 'none',
+        '.MuiDataGrid-columnSeparator--sideRight': {
+          display: 'none',
+        },
       }}
     />
   );

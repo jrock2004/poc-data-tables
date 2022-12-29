@@ -24,3 +24,15 @@ export const Default: Story = {
     rows: generateUserTableData(10),
   },
 };
+
+export const DefaultWithLargeData: Story = {
+  args: {
+    ariaLabel: 'User table',
+    checkboxSelection: false,
+    columns,
+    loading: false,
+    onCellEditStop: (params, event) => console.log({ params, event }),
+    pageSize: 10,
+    rows: generateUserTableData(1000),
+  },
+};
